@@ -1,0 +1,20 @@
+.startButton {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+        background: #1d4ed8;
+    }
+
+    &:active {
+        background: #1e40af;
+    }
+}
