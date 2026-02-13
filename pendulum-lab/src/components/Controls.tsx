@@ -2,12 +2,10 @@ import { useState } from "react";
 import styles from "./Controls.module.scss";
 
 interface Props {
-  length: number | null;
-  setLength: (v: number) => void;
   setTheta0: (v: number) => void;
 }
 
-export function Controls({ length, setLength, setTheta0 }: Props) {
+export function Controls({ setTheta0 }: Props) {
   const [currTheta, setCurrTheta] = useState<number | null>(30);
 
   return (

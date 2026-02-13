@@ -41,8 +41,6 @@ export default function App() {
       <div className={styles.content}>
         <div className={styles.panel}>
           <Controls
-            length={length}
-            setLength={setLength}
             setTheta0={setTheta0}
           />
         </div>
