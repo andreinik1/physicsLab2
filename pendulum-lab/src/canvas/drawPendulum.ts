@@ -9,7 +9,7 @@ export function drawPendulum(
 
   const pivotX = width / 2;
   const pivotY = 50;
-  const scale = 70;
+  const scale = 200;
   const L = length * scale;
 
   const x = pivotX + L * Math.sin(theta);

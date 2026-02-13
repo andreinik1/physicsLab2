@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import styles from './LabPendulum.module.scss';
 
+
 interface LabPendulumProps {
     measurements: Measurement[];
     studentName?: string;
@@ -55,7 +56,6 @@ const LabPendulum: React.FC<LabPendulumProps> = ({ measurements, studentName }) 
                 <div className={styles.formulaGrid}>
                     <div className={styles.formulaCard}>
                         <small>Період коливань</small>
-                        {/* Використовуємо звичайний текст або обгортку, щоб TS не шукав змінні */}
                         <div>{`T = t / N`}</div>
                     </div>
                     <div className={styles.formulaCard}>
@@ -98,7 +98,7 @@ const LabPendulum: React.FC<LabPendulumProps> = ({ measurements, studentName }) 
                 <div>
                     <h4>Середні значення:</h4>
                     <p>{`g_cp = ${results.gAvg.toFixed(3)} м/с²`}</p>
-                    <p>$\Delta g = {results.deltaG.toFixed(3)}$ м/с²</p>
+                    <p>{`Delta g = ${results.deltaG.toFixed(3)} м/с²`}</p>
                     <div className={styles.resultBox}>
                         g = ({results.gAvg.toFixed(2)} ± {results.deltaG.toFixed(2)}) м/с²
                     </div>
@@ -106,7 +106,7 @@ const LabPendulum: React.FC<LabPendulumProps> = ({ measurements, studentName }) 
                 <div>
                     <h4>Похибка:</h4>
                     <p className={styles.errorText}>
-                        {`varepsilon = {results.epsilon.toFixed(2)}\%$`}
+                        {`varepsilon = ${results.epsilon.toFixed(2)}\%`}
                     </p>
                 </div>
             </section>
