@@ -10,6 +10,14 @@ export default function App() {
   return (
     <main className={styles.app}>
       <h1 className={styles.title}>Mathematical pendulum</h1>
+      <div>
+        <input type="text" id="debug_input1" />
+        <input type="text" id="debug_input2" />
+        <button id="debug_button">
+          SEND
+        </button>
+        <p id="debug_text">Debug</p>
+      </div>
 
       <div className={styles.content}>
         <div className={styles.panel}>
@@ -27,13 +35,7 @@ export default function App() {
           />
         </div>
 
-        <div className={styles.panel}>
-          <Controls
-            length={length}
-            setLength={setLength}
-            setTheta0={setTheta0}
-          />
-        </div>
+
       </div>
     </main>
   );

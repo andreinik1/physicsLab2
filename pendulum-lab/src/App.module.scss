@@ -25,11 +25,12 @@
 }
 
 .panel {
-    flex: 0 0 420px;
+    width: 15%;
 }
 
 .canvasWrapper {
-    flex: 1;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: flex-start;
