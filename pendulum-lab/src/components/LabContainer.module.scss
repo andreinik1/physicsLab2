@@ -52,7 +52,7 @@
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    transition: background 0.2s;
+    transition: 0.2s;
 
     &:hover {
       background: #2563eb;
@@ -66,6 +66,7 @@
   background: white;
   border-radius: 8px;
   overflow: hidden;
+  margin-top: 1rem;
 
   th {
     background: #f1f5f9;
@@ -80,29 +81,59 @@
     padding: 12px;
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
+
+    input {
+      width: 40%;
+      padding: 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+
+      &:focus {
+        border-color: #3b82f6;
+      }
+
+      &[type="number"]::-webkit-outer-spin-button,
+      &[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &[type="number"] {
+        -moz-appearance: textfield;
+      }
+    }
   }
 
-  // Стили статусов
   .rowCorrect {
-    background-color: #f0fdf4; // Светло-зеленый
-    td { color: #166534; }
+    background-color: #f0fdf4; // светло-зеленый
+    td {
+      color: #166534;
+    }
   }
 
   .rowIncorrect {
-    background-color: #fef2f2; // Светло-красный
-    td { color: #991b1b; }
+    background-color: #fef2f2; // светло-красный
+    td {
+      color: #991b1b;
+    }
   }
 }
 
-.statusBadge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  text-transform: uppercase;
+.errorBox {
+  margin-top: 12px;
+  color: #b00020;
+  background: #ffecec;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
 .startButton {
   background: #10b981;
-  &:hover { background: #059669; }
+  &:hover {
+    background: #059669;
+  }
+  margin-top: 16px;
 }
