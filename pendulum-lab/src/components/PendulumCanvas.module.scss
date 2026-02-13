@@ -1,6 +1,6 @@
 .pendulumWrapper {
-    width: 80%;
-    height: calc(100vh - 100px); // почти весь экран
+    width: 100% !important;
+    height: calc(100vh - 100px);
     max-height: 900px;
 
     display: flex;
@@ -9,7 +9,7 @@
 
     background: radial-gradient(circle at top, #f9fafb, #e5e7eb);
     border-radius: 20px;
-    padding: 16px;
+    margin: 0;
 
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
