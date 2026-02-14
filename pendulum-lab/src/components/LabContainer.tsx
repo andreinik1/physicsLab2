@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./LabContainer.module.scss";
 
 interface Measure {
@@ -106,9 +106,38 @@ const LabContainer: React.FC = () => {
   };
 
   const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value) || 0;
-    const sanitized = Math.min(10, Math.max(0, val));
-    setMeasurementsCount(`${sanitized}`);
+    const val = parseInt(e.target.value, 10) || 0;
+    const newCount = Math.min(10, Math.max(0, val));
+
+    // 1. Обновляем само число
+    setMeasurementsCount(`${newCount}`);
+
+    // 2. Сразу же обновляем массив строк (вместо useEffect)
+    setMeasures((prev) => {
+      if (prev.length === newCount) return prev;
+
+      if (prev.length < newCount) {
+        const extra: Measure[] = Array.from(
+          { length: newCount - prev.length },
+          () => ({
+            L: "",
+            N: "",
+            t: "",
+            T: "",
+            g: "",
+            g_avg: "",
+            delta_g: "",
+            delta_g_avg: "",
+          }),
+        );
+        return [...prev, ...extra];
+      } else {
+        return prev.slice(0, newCount);
+      }
+    });
+
+    // 3. Обнуляем валидацию
+    setValidRows(Array(newCount).fill(undefined));
   };
 
   return (
