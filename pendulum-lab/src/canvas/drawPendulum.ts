@@ -4,6 +4,7 @@ export function drawPendulum(
   height: number,
   length: number,
   theta: number,
+  isMeasuringPeriod: boolean = false,
 ) {
   ctx.clearRect(0, 0, width, height);
 
@@ -15,36 +16,25 @@ export function drawPendulum(
   const x = pivotX + L * Math.sin(theta);
   const y = pivotY + L * Math.cos(theta);
 
-  /* =========================
-     1. Центральная линия (θ = 0)
-     ========================= */
+  // Центральна лінія
   ctx.beginPath();
   ctx.moveTo(pivotX, pivotY);
   ctx.lineTo(pivotX, pivotY + L + 20);
-  ctx.strokeStyle = "rgba(0,0,0,0.2)";
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(0,0,0,0.1)";
   ctx.setLineDash([6, 6]);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  /* =========================
-     2. Траектория движения груза
-     ========================= */
+  // Траєкторія (Червона при замірі)
   ctx.beginPath();
-  ctx.arc(
-    pivotX,
-    pivotY,
-    L,
-    Math.PI / 2 - Math.abs(theta),
-    Math.PI / 2 + Math.abs(theta),
-  );
-  ctx.strokeStyle = "rgba(25, 118, 210, 0.3)";
-  ctx.lineWidth = 2;
+  ctx.arc(pivotX, pivotY, L, Math.PI / 2 - 1, Math.PI / 2 + 1);
+  ctx.strokeStyle = isMeasuringPeriod
+    ? "rgba(255, 0, 0, 0.8)"
+    : "rgba(25, 118, 210, 0.3)";
+  ctx.lineWidth = isMeasuringPeriod ? 3 : 2;
   ctx.stroke();
 
-  /* =========================
-     3. Нить
-     ========================= */
+  // Нитка
   ctx.beginPath();
   ctx.moveTo(pivotX, pivotY);
   ctx.lineTo(x, y);
@@ -52,19 +42,9 @@ export function drawPendulum(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  /* =========================
-     4. Груз
-     ========================= */
+  // Вантаж
   ctx.beginPath();
   ctx.arc(x, y, 12, 0, Math.PI * 2);
-  ctx.fillStyle = "#1976d2";
-  ctx.fill();
-
-  /* =========================
-     5. Точка подвеса
-     ========================= */
-  ctx.beginPath();
-  ctx.arc(pivotX, pivotY, 4, 0, Math.PI * 2);
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = isMeasuringPeriod ? "#ff0000" : "#1976d2";
   ctx.fill();
 }

@@ -15,8 +15,11 @@ interface Measure {
 const LabContainer: React.FC = () => {
   const [studentName, setStudentName] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [measurementsCount, setMeasurementsCount] = useState<string | null>(
+    "3",
+  );
   const [measures, setMeasures] = useState<Measure[]>(
-    Array.from({ length: 6 }, () => ({
+    Array.from({ length: Number(measurementsCount) || 3 }, () => ({
       L: "",
       N: "",
       t: "",
@@ -92,12 +95,28 @@ const LabContainer: React.FC = () => {
     setValidRows(data.result);
   };
 
+  const downloadSample = () => {
+    const fileUrl = "./lab2.doc";
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = "ЛБ 2 Приск. вільн. пад.doc";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value) || 0;
+    const sanitized = Math.min(10, Math.max(0, val));
+    setMeasurementsCount(`${sanitized}`);
+  };
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} style={{ marginBottom: "30px" }}>
       <section className={styles.inputCard}>
         <h2>Лабораторная работа: Маятник</h2>
 
-        <label className={styles.formInline}>
+        <div className={styles.formInline}>
           <input
             type="text"
             placeholder="Прізвище учня"
@@ -105,7 +124,21 @@ const LabContainer: React.FC = () => {
             onChange={(e) => setStudentName(e.target.value)}
             required
           />
-        </label>
+          <div className={styles.countContainer}>
+            <label>Кількість замірів (max 10):</label>
+            <input
+              type="number"
+              min="1"
+              max="10"
+              placeholder="Введіть кількість замірів"
+              value={`${measurementsCount}`}
+              onChange={handleCountChange}
+            />
+          </div>
+          <button onClick={downloadSample} className={styles.downloadBtn}>
+            Скачати зразок виконання
+          </button>
+        </div>
 
         {errors.length > 0 && (
           <div className={styles.errorBox}>
