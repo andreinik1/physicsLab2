@@ -11,6 +11,7 @@ import math
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+'''
 Base = declarative_base()
 
 # Модель таблицы в БД
@@ -29,6 +30,7 @@ if not db.query(SecretData).first():
     db.add(SecretData(key="input2", value="222"))
     db.commit()
 db.close()
+'''
 
 # --- Приложение FastAPI ---
 app = FastAPI()
