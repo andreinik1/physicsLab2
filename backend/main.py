@@ -4,6 +4,8 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
+from typing import List, Optional
+import math
 
 # --- Настройка БД (SQLite) ---
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -39,27 +41,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class CheckRequest(BaseModel):
-    val1: str
-    val2: str
+class Measures(BaseModel):
+    L: str
+    N: str
+    t: str
+    T: str
+    g: str
+    g_avg: str
+    delta_g: str
+    delta_g_avg: str
+
+class ExperimentData(BaseModel):
+    experiment: str
+    measures: List[Measures]
+    studentName: Optional[str]
 
 @app.post("/check")
-def check_values(data: CheckRequest):
-    print("zalupa")
-    db = SessionLocal()
+def check_data(data: ExperimentData):
+    detailed_results = []
+    g_avg = 0
+    msv_g = []
+    msv_delta_g = []
     
-    # Ищем правильные значения в БД
-    db_val1 = db.query(SecretData).filter(SecretData.key == "input1").first()
-    db_val2 = db.query(SecretData).filter(SecretData.key == "input2").first()
+    for m in data.measures:
+        # По умолчанию считаем всё верным, пока не доказано обратное
+        TGK_check = {
+            "T": True, "g": True
+        }
+        
+        L = float(m.L)
+        N = float(m.N)
+        t = float(m.t)
+        T_user = float(m.T)
+        g_user = float(m.g)
+        
+        # 1. Проверка Периода T = t / N
+        T_calc = t / N
+        if not math.isclose(T_user, T_calc, rel_tol=0.01):
+            TGK_check["T"] = False
+            
+        # 2. Проверка g = (4 * pi^2 * L) / T^2
+        # Считаем g на основе введённого пользователем T
+        g_calc = (4 * (math.pi**2) * L) / (T_user**2)
+        if not math.isclose(g_user, g_calc, rel_tol=0.05):
+            TGK_check["g"] = False
+        g_avg += g_calc
+        msv_g.append(g_calc)
+
+        detailed_results.append(TGK_check)
+    g_avg /= len(msv_g)
+    for i in msv_g:
+        msv_delta_g.append(abs(g_avg-i))
     
-    ans1 = (data.val1 == db_val1.value) if db_val1 else False
-    ans2 = (data.val2 == db_val2.value) if db_val2 else False
-    
-    db.close()
-    
+    delta_g_avg = sum(msv_delta_g)/len(msv_delta_g)
+
+    k = 0
+    for m in data.measures:
+        davgd_check = {
+            "g_avg": True, "delta_g": True, "delta_g_avg": True
+        }
+        
+        g_avg_user = float(m.g_avg)
+        delta_g_user = float(m.delta_g)
+        delta_g_avg_user = float(m.delta_g_avg)
+
+        if not math.isclose(g_avg_user, g_avg, rel_tol=0.01):
+            davgd_check["g_avg"] = False
+
+        if not math.isclose(delta_g_user, msv_delta_g[k], rel_tol=0.1):
+            davgd_check["delta_g"] = False
+        if not math.isclose(delta_g_avg_user, delta_g_avg, rel_tol=0.01):
+            davgd_check["delta_g_avg"] = False
+        k += 1
+
+        detailed_results.append(davgd_check)
     return {
-        "result": f"Answer 1: {ans1}\nAnswer 2: {ans2}"
+        "status": "OK",
+        "user": data.studentName,
+        "detailed_results": detailed_results
     }
+
 
 if __name__ == "__main__":
     import uvicorn
