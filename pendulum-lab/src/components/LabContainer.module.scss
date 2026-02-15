@@ -83,7 +83,7 @@
     color: #1e293b;
 
     input {
-      width: 40%;
+      width: 80%;
       padding: 6px;
       border: 1px solid #cbd5e1;
       border-radius: 6px;
@@ -130,14 +130,6 @@
   font-size: 14px;
 }
 
-.startButton {
-  background: #10b981;
-  &:hover {
-    background: #059669;
-  }
-  margin-top: 16px;
-}
-
 .downloadBtn {
   padding: 8px 15px;
   border-radius: 4px;
@@ -147,16 +139,35 @@
   transition: 0.2s;
 }
 
-.downloadBtn {
-  background: #10b981;
-  color: white;
-  &:hover {
-    background: #059669;
-  }
-}
-
 .countContainer {
   display: flex;
   gap: 4px;
   align-items: center;
+}
+
+.inputCorrect {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+  color: #166534 !important;
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+  }
+}
+
+.inputIncorrect {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+  color: #991b1b !important;
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+  }
+}
+
+.table td {
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }

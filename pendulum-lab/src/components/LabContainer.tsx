@@ -12,14 +12,19 @@ interface Measure {
   delta_g_avg: string;
 }
 
+// Интерфейс для детальных результатов проверки от сервера
+interface DetailedResult {
+  [key: string]: boolean | undefined;
+}
+
 const LabContainer: React.FC = () => {
   const [studentName, setStudentName] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
-  const [measurementsCount, setMeasurementsCount] = useState<string | null>(
-    "3",
-  );
+  const [measurementsCount, setMeasurementsCount] = useState<string>("3");
+
+  // Инициализация пустого массива измерений
   const [measures, setMeasures] = useState<Measure[]>(
-    Array.from({ length: Number(measurementsCount) || 3 }, () => ({
+    Array.from({ length: 3 }, () => ({
       L: "",
       N: "",
       t: "",
@@ -30,38 +35,20 @@ const LabContainer: React.FC = () => {
       delta_g_avg: "",
     })),
   );
-  const [validRows, setValidRows] = useState<boolean[]>(
-    Array(measures.length).fill(undefined),
-  );
 
+  // Стейт для хранения результатов проверки каждого поля
+  const [validResults, setValidResults] = useState<DetailedResult[]>([]);
+
+  // Валидация перед отправкой
   const validateMeasures = (): string[] => {
     const errs: string[] = [];
-
     measures.forEach((m, i) => {
       const row = i + 1;
-
-      const L = Number(m.L);
-      const N = Number(m.N);
-      const t = Number(m.t);
-      const T = Number(m.T);
-      const g = Number(m.g);
-      const gAvg = Number(m.g_avg);
-      const dG = Number(m.delta_g);
-      const dGAvg = Number(m.delta_g_avg);
-
-      if (L <= 0) errs.push(`Рядок ${row}: L має бути > 0`);
-      if (!Number.isInteger(N) || N <= 0)
+      if (Number(m.L) <= 0) errs.push(`Рядок ${row}: L має бути > 0`);
+      if (!Number.isInteger(Number(m.N)) || Number(m.N) <= 0)
         errs.push(`Рядок ${row}: N має бути цілим числом > 0`);
-      if (t <= 0) errs.push(`Рядок ${row}: t має бути > 0`);
-      if (T <= 0) errs.push(`Рядок ${row}: T має бути > 0`);
-      if (g <= 0 || g > 20)
-        errs.push(`Рядок ${row}: g має бути в межах (0, 20)`);
-      if (gAvg <= 0 || gAvg > 20)
-        errs.push(`Рядок ${row}: g_avg має бути в межах (0, 20)`);
-      if (dG < 0) errs.push(`Рядок ${row}: delta_g ≥ 0`);
-      if (dGAvg < 0) errs.push(`Рядок ${row}: delta_g_avg ≥ 0`);
+      if (Number(m.t) <= 0) errs.push(`Рядок ${row}: t має бути > 0`);
     });
-
     return errs;
   };
 
@@ -69,53 +56,24 @@ const LabContainer: React.FC = () => {
     setMeasures((prev) =>
       prev.map((row, i) => (i === rowIndex ? { ...row, [field]: value } : row)),
     );
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const validationErrors = validateMeasures();
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
-      return;
+    // Сбрасываем подсветку ошибки для конкретного поля при его изменении
+    if (validResults[rowIndex]) {
+      setValidResults((prev) =>
+        prev.map((res, i) =>
+          i === rowIndex ? { ...res, [field]: undefined } : res,
+        ),
+      );
     }
-
-    console.log(measures);
-
-    setErrors([]);
-
-    const payload = { studentName, experiment: "pendulum", measures };
-    const response = await fetch("http://127.0.0.1:8080/check", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-    setValidRows(data.result);
-  };
-
-  const downloadSample = () => {
-    const fileUrl = "./lab2.doc";
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = "ЛБ 2 Приск. вільн. пад.doc";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10) || 0;
     const newCount = Math.min(10, Math.max(0, val));
 
-    // 1. Обновляем само число
     setMeasurementsCount(`${newCount}`);
 
-    // 2. Сразу же обновляем массив строк (вместо useEffect)
     setMeasures((prev) => {
       if (prev.length === newCount) return prev;
-
       if (prev.length < newCount) {
         const extra: Measure[] = Array.from(
           { length: newCount - prev.length },
@@ -136,14 +94,72 @@ const LabContainer: React.FC = () => {
       }
     });
 
-    // 3. Обнуляем валидацию
-    setValidRows(Array(newCount).fill(undefined));
+    // Сбрасываем валидацию при изменении размера таблицы
+    setValidResults([]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const validationErrors = validateMeasures();
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors([]);
+    const count = Number(measurementsCount);
+    const payload = { studentName, experiment: "pendulum", measures };
+
+    try {
+      const response = await fetch("http://127.0.0.1:8080/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (data.detailed_results) {
+        const rawResults: DetailedResult[] = data.detailed_results;
+
+        // Магия объединения:
+        // Мы берем только первые 'count' элементов и подмешиваем в них
+        // данные из второй половины массива (i + count)
+        const mergedResults = rawResults.slice(0, count).map((item, i) => {
+          const summaryData = rawResults[i + count] || {};
+          return {
+            ...item,
+            ...summaryData,
+          };
+        });
+
+        setValidResults(mergedResults);
+      }
+    } catch {
+      setErrors(["Не вдалося з'єднатися з сервером"]);
+    }
+  };
+  const downloadSample = () => {
+    const link = document.createElement("a");
+    link.href = "./lab2.doc";
+    link.download = "ЛБ 2 Приск. вільн. пад.doc";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Хелпер для получения класса валидации ячейки
+  const getFieldClassName = (rowIndex: number, fieldName: string) => {
+    const rowResult = validResults[rowIndex];
+    if (!rowResult || rowResult[fieldName] === undefined) return "";
+    return rowResult[fieldName] ? styles.inputCorrect : styles.inputIncorrect;
   };
 
   return (
     <div className={styles.wrapper} style={{ marginBottom: "30px" }}>
       <section className={styles.inputCard}>
-        <h2>Лабораторная работа: Маятник</h2>
+        <h2>Лабораторна робота: Маятник</h2>
 
         <div className={styles.formInline}>
           <input
@@ -159,12 +175,15 @@ const LabContainer: React.FC = () => {
               type="number"
               min="1"
               max="10"
-              placeholder="Введіть кількість замірів"
-              value={`${measurementsCount}`}
+              value={measurementsCount}
               onChange={handleCountChange}
             />
           </div>
-          <button onClick={downloadSample} className={styles.downloadBtn}>
+          <button
+            type="button"
+            onClick={downloadSample}
+            className={styles.downloadBtn}
+          >
             Скачати зразок виконання
           </button>
         </div>
@@ -179,53 +198,53 @@ const LabContainer: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className={styles.formInline}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>&nbsp;</th>
-                <th>№</th>
-                <th>L (m)</th>
-                <th>N</th>
-                <th>t (c)</th>
-                <th>T (c)</th>
-                <th>g (m/s²)</th>
-                <th>g_avg (m/s²)</th>
-                <th>delta_g (m/s²)</th>
-                <th>delta_g_avg (m/s²)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {measures.map((row, i) => (
-                <tr
-                  key={i}
-                  className={
-                    validRows === undefined
-                      ? ""
-                      : validRows[i]
-                        ? "rowCorrect"
-                        : "rowIncorrect"
-                  }
-                >
-                  <td>&nbsp;</td>
-                  <td>{i + 1}</td>
-                  {Object.keys(row).map((key) => (
-                    <td key={key}>
-                      <input
-                        type="number"
-                        step={key === "N" ? 1 : 0.001}
-                        value={row[key as keyof Measure]}
-                        onChange={(e) => handleChange(i, key, e.target.value)}
-                        required
-                      />
-                    </td>
-                  ))}
+        <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>L (m)</th>
+                  <th>N</th>
+                  <th>t (c)</th>
+                  <th>T (c)</th>
+                  <th>g (m/s²)</th>
+                  <th>g_avg (m/s²)</th>
+                  <th>delta_g (m/s²)</th>
+                  <th>delta_g_avg (m/s²)</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {measures.map((row, i) => (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    {(Object.keys(row) as Array<keyof Measure>).map((key) => (
+                      <td key={key}>
+                        <input
+                          type="number"
+                          step={key === "N" ? 1 : 0.001}
+                          value={row[key]}
+                          onChange={(e) => handleChange(i, key, e.target.value)}
+                          className={getFieldClassName(i, key)}
+                          required
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          <button type="submit" className={`${styles.startButton}`}>
+          <button
+            type="submit"
+            className={styles.downloadBtn}
+            style={{
+              marginTop: "20px",
+              color: "white",
+              backgroundColor: "#3b82f6",
+            }}
+          >
             Додати та перевірити
           </button>
         </form>
