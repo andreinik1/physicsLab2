@@ -56,7 +56,6 @@ class Measures(BaseModel):
 class ExperimentData(BaseModel):
     experiment: str
     measures: List[Measures]
-    studentName: Optional[str]
 
 @app.post("/check")
 def check_data(data: ExperimentData):
@@ -79,13 +78,13 @@ def check_data(data: ExperimentData):
         
         # 1. Проверка Периода T = t / N
         T_calc = t / N
-        if not math.isclose(T_user, T_calc, rel_tol=0.01):
+        if not math.isclose(T_user, T_calc, rel_tol=0.001):
             TGK_check["T"] = False
             
         # 2. Проверка g = (4 * pi^2 * L) / T^2
         # Считаем g на основе введённого пользователем T
         g_calc = (4 * (math.pi**2) * L) / (T_user**2)
-        if not math.isclose(g_user, g_calc, rel_tol=0.05):
+        if not math.isclose(g_user, g_calc, rel_tol=0.001):
             TGK_check["g"] = False
         g_avg += g_calc
         msv_g.append(g_calc)
@@ -107,10 +106,10 @@ def check_data(data: ExperimentData):
         delta_g_user = float(m.delta_g)
         delta_g_avg_user = float(m.delta_g_avg)
 
-        if not math.isclose(g_avg_user, g_avg, rel_tol=0.01):
+        if not math.isclose(g_avg_user, g_avg, rel_tol=0.001):
             davgd_check["g_avg"] = False
 
-        if not math.isclose(delta_g_user, msv_delta_g[k], rel_tol=0.2):
+        if not math.isclose(delta_g_user, msv_delta_g[k], rel_tol=0.1):
             davgd_check["delta_g"] = False
         if not math.isclose(delta_g_avg_user, delta_g_avg, rel_tol=0.01):
             davgd_check["delta_g_avg"] = False
@@ -119,7 +118,6 @@ def check_data(data: ExperimentData):
         detailed_results.append(davgd_check)
     return {
         "status": "OK",
-        "user": data.studentName,
         "detailed_results": detailed_results
     }
 

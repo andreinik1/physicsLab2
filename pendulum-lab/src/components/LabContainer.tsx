@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import styles from "./LabContainer.module.scss";
+import 'katex/dist/katex.min.css';
+import { InlineMath } from 'react-katex';
+
 
 interface Measure {
   L: string;
@@ -18,7 +21,6 @@ interface DetailedResult {
 }
 
 const LabContainer: React.FC = () => {
-  const [studentName, setStudentName] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [measurementsCount, setMeasurementsCount] = useState<string>("3");
 
@@ -109,7 +111,7 @@ const LabContainer: React.FC = () => {
 
     setErrors([]);
     const count = Number(measurementsCount);
-    const payload = { studentName, experiment: "pendulum", measures };
+    const payload = { experiment: "pendulum", measures };
 
     try {
       const response = await fetch("http://127.0.0.1:8080/check", {
@@ -159,16 +161,10 @@ const LabContainer: React.FC = () => {
   return (
     <div className={styles.wrapper} style={{ marginBottom: "30px" }}>
       <section className={styles.inputCard}>
-        <h2>Лабораторна робота: Маятник</h2>
+        <h2>Лабораторна робота: Математичний Маятник</h2>
 
         <div className={styles.formInline}>
-          <input
-            type="text"
-            placeholder="Прізвище учня"
-            value={studentName}
-            onChange={(e) => setStudentName(e.target.value)}
-            required
-          />
+
           <div className={styles.countContainer}>
             <label>Кількість замірів (max 10):</label>
             <input
@@ -203,15 +199,15 @@ const LabContainer: React.FC = () => {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>№</th>
-                  <th>L (m)</th>
-                  <th>N</th>
-                  <th>t (c)</th>
-                  <th>T (c)</th>
-                  <th>g (m/s²)</th>
-                  <th>g_avg (m/s²)</th>
-                  <th>delta_g (m/s²)</th>
-                  <th>delta_g_avg (m/s²)</th>
+                  <th><InlineMath math="№" /> </th>
+                  <th><InlineMath math="L (m)" /> </th>
+                  <th><InlineMath math="N" /> </th>
+                  <th><InlineMath math="t (c)" /> </th>
+                  <th><InlineMath math="T (c)" /> </th>
+                  <th><InlineMath math="g \, [m/s^2]" /></th>
+                  <th><InlineMath math="g_{\text{сер}} \, [m/s^2]" /></th>
+                  <th><InlineMath math="\Delta g \, [m/s^2]" /></th>
+                  <th><InlineMath math="\Delta g_{\text{сер}} \, [m/s^2]" /></th>
                 </tr>
               </thead>
               <tbody>

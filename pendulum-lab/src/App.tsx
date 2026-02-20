@@ -3,6 +3,7 @@ import { PendulumCanvas } from "./components/PendulumCanvas";
 import styles from "./App.module.scss";
 import LabContainer from "./components/LabContainer.tsx";
 import PendulumControls from "./components/PendulumControls.tsx";
+import PendulumMeta from "./components/PendulumMeta.tsx";
 
 export default function App() {
   const [length, setLength] = useState<number>(1);
@@ -30,8 +31,12 @@ export default function App() {
 
   return (
     <main className={styles.app}>
-      <h1 className={styles.title}>Mathematical Pendulum Lab</h1>
+      <h1 className={styles.title}>Лабораторна робота</h1>
+      <h2 className={styles.title} style={{ marginTop: "0", textAlign: "center", fontSize: "24px" }}>Визначення прискорення вільного падіння за допомогою
+        математичного маятника
+      </h2>
       <div className={styles.mainGrid}>
+        <PendulumMeta />
         <div className={styles.controlsCol}>
           <PendulumControls
             setLength={setLength}

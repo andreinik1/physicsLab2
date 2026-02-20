@@ -54,15 +54,15 @@ const PendulumControls: React.FC<Props> = ({
 
   return (
     <section className={styles.inputCard} style={{ marginBottom: "30px" }}>
-      <h2>Параметри маятника</h2>
+      <h2>Параметри математичного маятника</h2>
       <div className={styles.formInline}>
         <div className={styles.field}>
-          <label>Кут (град):</label>
+          <label>Кут (град): </label>
           <input type="number" value={currTheta} onChange={handleThetaChange} />
         </div>
 
         <div className={styles.field}>
-          <label>L (довжина, м):</label>
+          <label>L (довжина, м): </label>
           <input
             type="number"
             step="0.1"
@@ -72,7 +72,7 @@ const PendulumControls: React.FC<Props> = ({
         </div>
 
         <div className={styles.field}>
-          <label>Тип режиму:</label>
+          <label>Тип режиму: </label>
           <select
             value={localMode}
             onChange={(e) => setLocalMode(e.target.value as locMode)}
@@ -84,7 +84,7 @@ const PendulumControls: React.FC<Props> = ({
 
         {localMode === "fixed" && (
           <div className={styles.field}>
-            <label>Коливань:</label>
+            <label>Коливань: </label>
             <input
               type="number"
               value={localN}
