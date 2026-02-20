@@ -110,7 +110,7 @@ def check_data(data: ExperimentData):
         if not math.isclose(g_avg_user, g_avg, rel_tol=0.01):
             davgd_check["g_avg"] = False
 
-        if not math.isclose(delta_g_user, msv_delta_g[k], rel_tol=0.1):
+        if not math.isclose(delta_g_user, msv_delta_g[k], rel_tol=0.2):
             davgd_check["delta_g"] = False
         if not math.isclose(delta_g_avg_user, delta_g_avg, rel_tol=0.01):
             davgd_check["delta_g_avg"] = False
