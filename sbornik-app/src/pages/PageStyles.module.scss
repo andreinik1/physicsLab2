@@ -1,0 +1,22 @@
+.linkStyles {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    text-decoration: none;
+    display: inline-block;
+
+    &:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+    }
+}

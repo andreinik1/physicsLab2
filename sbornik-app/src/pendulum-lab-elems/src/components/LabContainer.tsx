@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./LabContainer.module.scss";
-import 'katex/dist/katex.min.css';
-import { InlineMath } from 'react-katex';
+import { InlineMath } from "react-katex";
+import "katex/dist/katex.min.css";
 
 
 interface Measure {
@@ -114,7 +114,7 @@ const LabContainer: React.FC = () => {
     const payload = { experiment: "pendulum", measures };
 
     try {
-      const response = await fetch("http://127.0.0.1:8080/check", {
+      const response = await fetch("http://127.0.0.1:8080/pendulum-check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

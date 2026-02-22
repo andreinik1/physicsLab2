@@ -1,0 +1,173 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.inputCard {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+
+  h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.formInline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 1rem;
+
+  input {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #3b82f6;
+    }
+
+    &[placeholder*="Прізвище"] {
+      width: 200px;
+    }
+  }
+
+  button {
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+
+    &:hover {
+      background: #2563eb;
+    }
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1rem;
+
+  th {
+    background: #f1f5f9;
+    padding: 12px;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #475569;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+
+    input {
+      width: 80%;
+      padding: 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+
+      &:focus {
+        border-color: #3b82f6;
+      }
+
+      &[type="number"]::-webkit-outer-spin-button,
+      &[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &[type="number"] {
+        -moz-appearance: textfield;
+      }
+    }
+  }
+
+  .rowCorrect {
+    background-color: #f0fdf4; // светло-зеленый
+    td {
+      color: #166534;
+    }
+  }
+
+  .rowIncorrect {
+    background-color: #fef2f2; // светло-красный
+    td {
+      color: #991b1b;
+    }
+  }
+}
+
+.errorBox {
+  margin-top: 12px;
+  color: #b00020;
+  background: #ffecec;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.downloadBtn {
+  padding: 8px 15px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.countContainer {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.inputCorrect {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+  color: #166534 !important;
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+  }
+}
+
+.inputIncorrect {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+  color: #991b1b !important;
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+  }
+}
+
+.table td {
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

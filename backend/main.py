@@ -57,7 +57,7 @@ class ExperimentData(BaseModel):
     experiment: str
     measures: List[Measures]
 
-@app.post("/check")
+@app.post("/pendulum-check")
 def check_data(data: ExperimentData):
     detailed_results = []
     g_avg = 0

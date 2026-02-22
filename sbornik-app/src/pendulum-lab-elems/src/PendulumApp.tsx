@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { PendulumCanvas } from "./components/PendulumCanvas";
+import { PendulumCanvas } from "./components/PendulumCanvas.tsx";
 import styles from "./App.module.scss";
 import LabContainer from "./components/LabContainer.tsx";
 import PendulumControls from "./components/PendulumControls.tsx";
 import PendulumMeta from "./components/PendulumMeta.tsx";
 
-export default function App() {
+export default function PendulumApp() {
   const [length, setLength] = useState<number>(1);
   const [theta0, setTheta0] = useState<number>(0.52);
   const [mode, setMode] = useState<"infinite" | "fixed">("fixed");

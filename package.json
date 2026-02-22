@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "katex": "^0.16.28",
+    "react-katex": "^3.1.0",
     "sass": "^1.97.3"
   }
 }
