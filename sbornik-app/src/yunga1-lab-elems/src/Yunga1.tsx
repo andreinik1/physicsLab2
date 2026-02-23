@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Yunga1Canvas } from "./components/Yunga1Canvas";
 import Yunga1Controls from "./components/Yunga1Controls";
+import Yunga1Meta from "./components/Yunga1Meta.tsx";
 import LabContainer from "./components/LabContainer.tsx";
 import styles from "./App.module.scss";
 
 export default function YoungApp() {
-  const [force, setForce] = useState(5);
+  const [force, setForce] = useState(0);
   const [length, setLength] = useState(0.6);
   const [b, setB] = useState(0.02);
   const [h, setH] = useState(0.004);
@@ -20,7 +21,8 @@ export default function YoungApp() {
 
       <div className={styles.mainGrid}>
         <div className={styles.controlsCol}>
-          <Yunga1Controls
+        <Yunga1Meta/>  
+	<Yunga1Controls
             force={force}
             setForce={setForce}
             length={length}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./LabContainer.module.scss";
 import { calculateDeflection } from "../physics/yunga1";
 
@@ -28,7 +28,7 @@ interface Props {
 
 const STEP = 5;
 const MAX_FORCE = 25;
-const UNLOAD_K = 0.95;
+const UNLOAD_K = 1.09;
 
 function formatValue(v: number, digits = 6) {
   return v.toFixed(digits);
@@ -45,47 +45,60 @@ const Yunga1Controls: React.FC<Props> = ({
   setH,
   E,
 }) => {
-  const [table, setTable] = useState<MeasurePoint[]>([]);
+  const [table, setTable] = useState<MeasurePoint[]>([{F: 0, fLoad: 0, fUnload: 0, fAvg: 0}]);
   const [phase, setPhase] = useState<"load" | "unload">("load");
 
-  const handleStep = () => {
-    if (phase === "load" && force >= MAX_FORCE) {
-      setPhase("unload");
-      return;
-    }
+  
+ const handleStep = () => {
+  // 1. Сначала определяем, в какую сторону идем
+  const isLoading = phase === "load";
+  
+  // 2. Рассчитываем НОВОЕ значение силы заранее
+  const nextForce = isLoading ? force + STEP : force - STEP;
 
-    if (phase === "unload" && force <= 0) return;
+  // 3. Проверки на выход за границы
+  if (isLoading && force >= MAX_FORCE) {
+    // Если уже 25, переключаем на разгрузку и выходим
+    setPhase("unload");
+    return;
+  }
+  if (!isLoading && force <= 0) {
+    // Если уже 0 в режиме разгрузки, ничего не делаем
+    return;
+  }
 
-    const newForce = phase === "load" ? force + STEP : force - STEP;
+  // 4. Считаем физику для НОВОГО значения силы (nextForce)
+  const raw = calculateDeflection(nextForce, length, b, h, E);
+  const fValue = isLoading ? raw : raw * UNLOAD_K;
 
-    const raw = calculateDeflection(newForce, length, b, h, E);
-    const f = phase === "load" ? raw : raw * UNLOAD_K;
+  // 5. Обновляем силу
+  setForce(nextForce);
 
-    setTable((prev) => {
-      if (phase === "load") {
-        return [
-          ...prev,
-          { F: newForce, fLoad: f, fUnload: 0, fAvg: 0 },
-        ];
-      }
-
+  // 6. Обновляем таблицу, используя nextForce (а не force!)
+  setTable((prev) => {
+    if (isLoading) {
+      // Добавляем новую строку для каждого шага нагрузки (5, 10... 25)
+      return [...prev, { F: nextForce, fLoad: fValue, fUnload: 0, fAvg: 0 }];
+    } else {
+      // Ищем строку с силой nextForce и обновляем данные разгрузки
       return prev.map((row) =>
-        row.F === newForce
-          ? {
-              ...row,
-              fUnload: f,
-              fAvg: (row.fLoad + f) / 2,
-            }
+        row.F === nextForce
+          ? { ...row, fUnload: fValue, fAvg: (row.fLoad + fValue) / 2 }
           : row
       );
-    });
+    }
+  });
 
-    setForce(newForce);
-  };
+  // 7. Если мы только что достигли максимума (25), 
+  // следующий клик должен сменить фазу
+  if (isLoading && nextForce === MAX_FORCE) {
+    setPhase("unload");
+  }
+}; 
 
   const resetExperiment = () => {
     setForce(0);
-    setTable([]);
+    setTable([{F: 0, fLoad: 0, fUnload: 0, fAvg: 0}]);
     setPhase("load");
   };
 
