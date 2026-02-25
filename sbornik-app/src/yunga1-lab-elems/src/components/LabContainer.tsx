@@ -165,7 +165,7 @@ const LabContainer: React.FC = () => {
                           type="number"
                           step="0.000001"
                           value={row[key]}
-                          onChange={(e) => handleChange(i, key, e.target.value)}
+                          onChange={(e) => handleChange(i, key, e.target.value.replaceAll(",", "."))}
                           className={getFieldClassName(i, key)}
                           required
                         />

@@ -220,7 +220,7 @@ const LabContainer: React.FC = () => {
                           type="number"
                           step={key === "N" ? 1 : 0.001}
                           value={row[key]}
-                          onChange={(e) => handleChange(i, key, e.target.value)}
+                          onChange={(e) => handleChange(i, key, e.target.value.replaceAll(",", "."))}
                           className={getFieldClassName(i, key)}
                           required
                         />
