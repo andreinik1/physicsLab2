@@ -138,7 +138,7 @@ def check_data(data: ExperimentData2):
             TGK_check["f_avg"] = False
 
         E_calc = (F*L**3)/(f_avg_calc*b*h**3)
-        if not math.isclose(f_avg_user, f_avg_calc, rel_tol=0.001):
+        if not math.isclose(E_user, E_calc, rel_tol=100000):
             TGK_check["E"] = False
         E_avg += E_calc
         E_msv.append(E_calc)

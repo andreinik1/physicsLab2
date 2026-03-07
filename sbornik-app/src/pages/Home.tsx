@@ -1,9 +1,10 @@
 import Menu from "../components/Menu";
+import "./Home.scss"
 
 const Home: React.FC = () => {
   return (
     <div>
-      <h1>Интерактивные лабораторные по физике</h1>
+      <h1>Інтерактивні лабораторні з фізики МНАУ</h1>
       
       <Menu />
     </div>
