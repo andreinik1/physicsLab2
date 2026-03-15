@@ -7,9 +7,9 @@ import styles from "./App.module.scss";
 
 export default function YoungApp() {
   const [force, setForce] = useState(0);
-  const [length, setLength] = useState(0.6);
-  const [b, setB] = useState(0.02);
-  const [h, setH] = useState(0.004);
+  const [length, setLength] = useState("0.6");
+  const [b, setB] = useState("0.02");
+  const [h, setH] = useState("0.004");
   const [E, setE] = useState(2e11);
 
   return (

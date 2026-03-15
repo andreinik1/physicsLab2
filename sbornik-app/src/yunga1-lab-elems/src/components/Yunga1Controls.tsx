@@ -13,14 +13,14 @@ interface Props {
   force: number;
   setForce: React.Dispatch<React.SetStateAction<number>>;
 
-  length: number;
-  setLength: React.Dispatch<React.SetStateAction<number>>;
+  length: string;
+  setLength: React.Dispatch<React.SetStateAction<string>>;
 
-  b: number;
-  setB: React.Dispatch<React.SetStateAction<number>>;
+  b: string;
+  setB: React.Dispatch<React.SetStateAction<string>>;
 
-  h: number;
-  setH: React.Dispatch<React.SetStateAction<number>>;
+  h: string;
+  setH: React.Dispatch<React.SetStateAction<string>>;
 
   E: number;
   setE: React.Dispatch<React.SetStateAction<number>>;
@@ -46,46 +46,37 @@ const Yunga1Controls: React.FC<Props> = ({
 }) => {
   const [table, setTable] = useState<MeasurePoint[]>([{ F: 0, fLoad: 0, fUnload: 0, fAvg: 0 }]);
   const [phase, setPhase] = useState<"load" | "unload">("load");
-  const [maxForce, setMaxForce] = useState<number>(10);
+  const [maxForce, setMaxForce] = useState<string>("10");
 
 
   const handleStep = () => {
     const isLoading = phase === "load";
     const nextForce = isLoading ? force + STEP : force - STEP;
 
-    // 1. Проверки границ
-    if (isLoading && force >= maxForce) {
+    if (isLoading && force >= +maxForce) {
       setPhase("unload");
       return;
     }
-    // Если мы уже в нуле и пытаемся идти дальше вниз — выходим
     if (!isLoading && force <= 0) return;
 
-    // 2. Расчет физики
-    const raw = calculateDeflection(nextForce, length, b, h, E);
+    const raw = calculateDeflection(nextForce, +length, +b, +h, E);
     const fValue = isLoading ? raw : raw * UNLOAD_K;
 
-    // 3. Обновление состояния силы
     setForce(nextForce);
 
-    // 4. Обновление таблицы
     setTable((prev) => {
       if (isLoading) {
         // 1. Стандартное добавление строки при нагрузке
         return [...prev, { F: nextForce, fLoad: fValue, fUnload: 0, fAvg: 0 }];
       } else {
-        // 2. Логика разгрузки
         return prev.map((row) => {
           if (row.F === nextForce) {
             let finalUnloadValue = fValue;
 
-            // СПЕЦИАЛЬНОЕ УСЛОВИЕ: если мы пришли в точку 0 при разгрузке
             if (nextForce === 0) {
-              // Ищем в таблице значение fLoad для силы STEP (например, 5)
               const rowAtFive = prev.find(r => r.F === STEP);
               const fLoadAtFive = rowAtFive ? rowAtFive.fLoad : 0;
 
-              // Устанавливаем 5% от fLoad при F=5
               finalUnloadValue = fLoadAtFive * 0.05;
             }
 
@@ -100,8 +91,7 @@ const Yunga1Controls: React.FC<Props> = ({
       }
     });
 
-    // 5. Переключение фазы при достижении пика
-    if (isLoading && nextForce === maxForce) {
+    if (isLoading && nextForce === +maxForce) {
       setPhase("unload");
     }
   };
@@ -120,25 +110,25 @@ const Yunga1Controls: React.FC<Props> = ({
         <div className={styles.field}>
           <label>L (м): </label>
           <input type="number" step="0.01" value={length}
-            onChange={(e) => setLength(+e.target.value)} />
+            onChange={(e) => setLength(e.target.value)} />
         </div>
 
         <div className={styles.field}>
           <label>b (м): </label>
           <input type="number" step="0.001" value={b}
-            onChange={(e) => setB(+e.target.value)} />
+            onChange={(e) => setB(e.target.value)} />
         </div>
 
         <div className={styles.field}>
           <label>h (м): </label>
           <input type="number" step="0.001" value={h}
-            onChange={(e) => setH(+e.target.value)} />
+            onChange={(e) => setH(e.target.value)} />
         </div>
 
         <div className={styles.field}>
           <label>Максимальна F (H): </label>
           <input type="number" step="5" value={maxForce}
-            onChange={(e) => setMaxForce(+e.target.value)} />
+            onChange={(e) => setMaxForce(e.target.value)} />
         </div>
       </div>
 
