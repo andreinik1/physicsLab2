@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
 from typing import List, Optional
 import math
+from decimal import Decimal, ROUND_HALF_UP
 
 #SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -176,6 +177,84 @@ def check_data(data: ExperimentData2):
         "detailed_results": detailed_results
     }
     
+class Measures3(BaseModel):
+    d: str
+    delta_E: str
+    delta_E_avg: str
+    E: str
+    E_avg: str
+    F: str
+    f_avg: str
+    f_nav: str
+    f_rozv: str
+    L: str
+
+class ExperimentData3(BaseModel):
+    experiment: str
+    measures: List[Measures3]
+
+@app.post("/yunga2-check")
+def check_data(data: ExperimentData3):
+    detailed_results = []
+    E_avg = 0
+    E_msv = []
+    delta_E_msv = []
+    for m in data.measures:
+        TGK_check = {
+            "f_avg": True, "E": True
+                }
+        f_nav = float(m.f_nav)
+        f_rozv = float(m.f_rozv)
+        F = float(m.F)
+        L = float(m.L)
+        d = float(m.d)
+        f_avg_user = float(m.f_avg)
+        E_user = float(m.E)
+
+        f_avg_calc = (f_nav+f_rozv)/2
+        f_avg_calc = float(Decimal(f"{f_avg_calc}").quantize(Decimal("0.000001"), rounding=ROUND_HALF_UP))
+        if not math.isclose(f_avg_user, f_avg_calc, rel_tol=0.005):
+            TGK_check["f_avg"] = False
+
+        E_calc = (4*L*F)/(math.pi*d**2*f_avg_calc)
+        E_calc = float(Decimal(f"{E_calc}").quantize(Decimal("1000000"), rounding=ROUND_HALF_UP))
+        if not math.isclose(E_user, E_calc, rel_tol=0.5):
+            TGK_check["E"] = False
+        E_avg += E_calc
+        E_msv.append(E_calc)
+        detailed_results.append(TGK_check)
+        print(f"f_avg: {f_avg_calc}; E: {E_calc}")
+    E_avg /= len(E_msv)
+    for i in E_msv:
+        delta_E_msv.append(abs(E_avg-i))
+    print("delta_E", delta_E_msv)
+    delta_E_avg = sum(delta_E_msv)/len(delta_E_msv)
+    print(f"delta_E_avg: {delta_E_avg}; E_avg: {E_avg}")
+    k = 0
+    for m in data.measures:
+        davgd_check = {
+            "E_avg": True, "delta_E": True, "delta_E_avg": True
+        }
+        
+        E_avg_user = float(m.E_avg)
+        delta_E_user = float(m.delta_E)
+        delta_E_avg_user = float(m.delta_E_avg)
+
+        if not math.isclose(E_avg_user, E_avg, rel_tol=0.001):
+            davgd_check["E_avg"] = False
+
+        if not math.isclose(delta_E_user, delta_E_msv[k], rel_tol=0.1):
+            davgd_check["delta_E"] = False
+
+        if not math.isclose(delta_E_avg_user, delta_E_avg, rel_tol=0.01):
+            davgd_check["delta_E_avg"] = False
+        k += 1
+
+        detailed_results.append(davgd_check)
+    return {
+        "status": "OK",
+        "detailed_results": detailed_results
+    }
 
 if __name__ == "__main__":
     import uvicorn
