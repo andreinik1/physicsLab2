@@ -1,0 +1,105 @@
+.inputCard {
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 30px;
+
+    h2 {
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+}
+
+.formInline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: flex-end; // Выравнивание всех элементов по нижней линии
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    input,
+    select {
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        width: 100px;
+        outline: none;
+        transition: all 0.2s ease;
+        background-color: white;
+        font-size: 14px;
+        color: #1e293b;
+
+        &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+    }
+}
+
+.startButton {
+    padding: 9px 20px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    height: 38px; // Фиксированная высота для совпадения с инпутами
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.monitor {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 0.95rem;
+
+    div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    b {
+        color: #0f172a;
+        font-family: "JetBrains Mono", monospace; // Моноширинный шрифт для цифр
+        font-size: 1.1rem;
+        background: #fff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+    }
+}
