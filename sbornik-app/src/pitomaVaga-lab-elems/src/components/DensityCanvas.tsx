@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { drawAreometer } from "../canvas/drawAreometr";
-import styles from "./PitomaVagaCanvas.module.scss";
 
 interface Props {
   p1: number;
@@ -20,21 +19,20 @@ export function DensityCanvas({ p1, p2, p3 }: Props) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = wrapper.clientWidth;
-    canvas.height = wrapper.clientHeight;
+    const updateSize = () => {
+      canvas.width = wrapper.clientWidth;
+      canvas.height = wrapper.clientHeight;
+      drawAreometer(ctx, canvas.width, canvas.height, p1, p2, p3);
+    };
 
-    // Определяем состояние для визуала: что именно сейчас "в фокусе"
-    // Для простоты: если P3 сильно изменили, показываем состояние P3
-    let state: "P1" | "P2" | "P3" = "P1";
-    if (p3 !== 1.1) state = "P3";
-    else if (p2 !== 0.8) state = "P2";
-
-    drawAreometer(ctx, canvas.width, canvas.height, state);
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, [p1, p2, p3]);
 
   return (
-    <div ref={wrapperRef} className={styles.pendulumWrapper} style={{ height: "400px", background: "#fff", borderRadius: "8px" }}>
-      <canvas ref={canvasRef} className={styles.pendulumCanvas} />
+    <div ref={wrapperRef} style={{ width: "100%", height: "600px", background: "#fff", borderRadius: "8px", border: "1px solid #ddd", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+      <canvas ref={canvasRef} style={{ display: "block" }} />
     </div>
   );
 }

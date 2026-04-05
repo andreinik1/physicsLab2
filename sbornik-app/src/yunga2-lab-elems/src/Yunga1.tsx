@@ -37,8 +37,8 @@ export default function YoungApp() {
         <div className={styles.canvasWrapper}>
           <Yunga1Canvas
             force={force}
-            length={length}
-            d={d}
+            length={+length}
+            d={+d}
             E={E}
           />
         </div>
